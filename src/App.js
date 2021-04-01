@@ -85,11 +85,35 @@ class App extends Component {
         });
     }
 
+    onSubmit = (data) => {
+        var { tasks } = this.state; //tasks = this.state.tasks
+        console.log("This is data: ", data);
+        data.id = this.generateID();
+        tasks.push(data);
+        this.setState({
+            tasks: tasks
+        });
+
+        //lưu vào localStorage
+        localStorage.setItem('Tasks', JSON.stringify(tasks))
+        // console.log("This is status: ", status);
+        // var task = {
+        //     id: this.generateID(),
+        //     name: data.name,
+        //     status: 
+        // }
+    }
+
     render() {
         var { tasks, isDisplayFrom } = this.state;
         console.log("State:", this.state);
         console.log("Props:", this.props);
-        var elmTaskForm = isDisplayFrom ? <TaskForm onCloseForm={this.onCloseForm} /> : "";
+        var elmTaskForm = isDisplayFrom
+            ? <TaskForm
+                onCloseForm={this.onCloseForm}
+                onSubmit={this.onSubmit}
+            />
+            : "";
         // var task = this.state.tasks;
         return (
             <div>
