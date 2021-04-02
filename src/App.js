@@ -57,13 +57,16 @@ class App extends Component {
         // console.log("State tasks:", this.state);
         localStorage.setItem('Tasks', JSON.stringify(tasks));
     }
+
     s4() {
-        return Math.floor((1 + Math.random() * 0x10000).toString(16).substring(1));
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
     }
 
     generateID() {
-        return this.s4()
-            + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4()
+        return this.s4() + this.s4()
+            + '-' + this.s4()
+            + '-' + this.s4()
+            + '-' + this.s4()
             + '-' + this.s4()
             + '-' + this.s4()
             + '-' + this.s4()
@@ -93,16 +96,47 @@ class App extends Component {
         this.setState({
             tasks: tasks
         });
-
-        //lưu vào localStorage
         localStorage.setItem('Tasks', JSON.stringify(tasks))
-        // console.log("This is status: ", status);
-        // var task = {
-        //     id: this.generateID(),
-        //     name: data.name,
-        //     status: 
-        // }
     }
+
+    onUpdateStatus = (id) => {
+        var { tasks } = this.state;
+        var index = this.findIndex(id);
+        console.log("ID:", id);
+        console.log("INDEX:", index);
+
+        if (index !== -1) {
+            tasks[index].status = !tasks[index].status;
+            this.setState({
+                tasks: tasks
+            });
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+    }
+
+    findIndex = (id) => {
+        var { tasks } = this.state;
+        var result = -1;
+        tasks.forEach((task, index) => {
+            if (task.id === id) {
+                result = index;
+            }
+        });
+        return result;
+    }
+
+    onDelete = (id) => {
+        var { tasks } = this.state;
+        var index = this.findIndex(id); //Tìm index
+        if (index !== -1) {
+            tasks.splice(index, 1)  //truyền vào index và số lượng phần tử muốn xóa
+            this.setState({
+                tasks: tasks
+            });
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+        this.onCloseForm();
+    };
 
     render() {
         var { tasks, isDisplayFrom } = this.state;
@@ -147,7 +181,11 @@ class App extends Component {
                             {/*Search - SORT */}
                             <Control />
                             {/* List */}
-                            <TaskList tasks={tasks} />
+                            <TaskList
+                                tasks={tasks}
+                                onUpdateStatus={this.onUpdateStatus}
+                                onDelete={this.onDelete}
+                            />
                         </div>
                     </div>
                 </div>
