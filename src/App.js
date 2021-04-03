@@ -21,8 +21,6 @@ class App extends Component {
 
     // }
 
-
-
     componentWillMount() {
         console.log('Component will Mount');
         if (localStorage && localStorage.getItem('tasks')) {

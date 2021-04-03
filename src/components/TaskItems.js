@@ -8,7 +8,7 @@ class TaskItems extends Component {
     };
 
     onDelete = () => {
-        this.props.onUpdateStatus(this.props.task.id);
+        this.props.onDelete(this.props.task.id);
     };
 
     render() {
