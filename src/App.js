@@ -16,7 +16,8 @@ class App extends Component {
             filter: {
                 name: '',
                 status: -1,
-            }
+            },
+            keywork: '',
         };
         // this.showHideModal = React.createRef();
     }
@@ -188,15 +189,21 @@ class App extends Component {
         // console.log(typeof filterStatus);
     }
 
+    onSearch = (keyword) => {
+        console.log(keyword);
+        this.setState({
+            keyword: keyword,
+        });
+    }
 
     render() {
-        var { tasks, isDisplayFrom, taskEditing, filter } = this.state;
+        var { tasks, isDisplayFrom, taskEditing, filter, keyword } = this.state;
 
         // console.log("State:", this.state);
         // console.log("Props:", this.props);
-
         if (filter) {
             if (filter.name) {
+                console.log("Filter tồn lại:");
                 tasks = tasks.filter((task) => {
                     return task.name.toLowerCase().indexOf(filter.name) !== -1;
                 });
@@ -209,6 +216,12 @@ class App extends Component {
                         return task.status === (filter.status === 1 ? true : false)
                     }
                 });
+        }
+
+        if (keyword) {
+            tasks = tasks.filter((task) => {
+                return task.name.toLowerCase().indexOf(keyword) !== -1;
+            });
         }
 
         var elmTaskForm = isDisplayFrom
@@ -249,7 +262,7 @@ class App extends Component {
                              </button>
 
                             {/*Search - SORT */}
-                            <Control />
+                            <Control onSearch={this.onSearch} />
                             {/* List */}
                             <TaskList
                                 tasks={tasks}
