@@ -13,6 +13,10 @@ class App extends Component {
             // isShowModal: false,
             isDisplayFrom: false,
             taskEditing: null,
+            filter: {
+                name: '',
+                status: -1,
+            }
         };
         // this.showHideModal = React.createRef();
     }
@@ -23,7 +27,6 @@ class App extends Component {
     // }
 
     componentWillMount() {
-        console.log('Component will Mount');
         if (localStorage && localStorage.getItem('tasks')) {
             var tasks = JSON.parse(localStorage.getItem('tasks'));
             this.setState({
@@ -173,10 +176,41 @@ class App extends Component {
         this.onShowForm();
     }
 
+    onFilter = (filterName, filterStatus) => {
+        // console.log("onFilter", filterName, ' - ', filterStatus);
+        filterStatus = parseInt(filterStatus, 10);
+        this.setState({
+            filter: {
+                name: filterName.toLowerCase(),
+                status: filterStatus,
+            }
+        });
+        // console.log(typeof filterStatus);
+    }
+
+
     render() {
-        var { tasks, isDisplayFrom, taskEditing } = this.state;
+        var { tasks, isDisplayFrom, taskEditing, filter } = this.state;
+
         // console.log("State:", this.state);
         // console.log("Props:", this.props);
+
+        if (filter) {
+            if (filter.name) {
+                tasks = tasks.filter((task) => {
+                    return task.name.toLowerCase().indexOf(filter.name) !== -1;
+                });
+            }
+            if (filter.status)  // !== null  !== undefined !== 0
+                tasks = tasks.filter((task) => {
+                    if (filter.status === -1) {
+                        return task;
+                    } else {
+                        return task.status === (filter.status === 1 ? true : false)
+                    }
+                });
+        }
+
         var elmTaskForm = isDisplayFrom
             ? <TaskForm
                 onCloseForm={this.onCloseForm}
@@ -222,6 +256,7 @@ class App extends Component {
                                 onUpdateStatus={this.onUpdateStatus}
                                 onDelete={this.onDelete}
                                 onUpdate={this.onUpdate}
+                                onFilter={this.onFilter}
                             />
                         </div>
                     </div>

@@ -2,10 +2,38 @@ import React, { Component } from 'react';
 import TaskItems from './TaskItems';
 
 class TaskList extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            filterName: '',
+            filterStatus: -1    //all : -1, active: 1, deactive: 0
+        }
+    }
+
+    onChange = (event) => {
+        var target = event.target;
+        var name = target.name;
+        var value = target.value;
+
+        this.props.onFilter(
+            name === 'filterName' ? value : this.state.filterName,
+            name === 'filterName' ? value : this.state.filterStatus,
+        )
+
+        this.setState({
+            [name]: value
+        });
+
+        //gọi props truyền ra ngoài
+
+    }
+
     render() {
-        // var tasks = this.props.tasks;
-        var { tasks } = this.props;
-        var elmtasks = tasks.map((task, index) => {
+        var { tasks } = this.props;      // var tasks = this.props.tasks;
+
+        var { filterName, filterStatus } = this.state;
+
+        var elmTasks = tasks.map((task, index) => {
             return <TaskItems
                 key={task.id}
                 index={index}
@@ -29,17 +57,21 @@ class TaskList extends Component {
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1</td>
+                            <td></td>
                             <td>
                                 <input type="text"
                                     className="form-control"
                                     name="filterName"
+                                    value={filterName}
+                                    onChange={this.onChange}
                                 />
                             </td>
                             <td>
                                 <select
                                     className="form-control"
                                     name="filterStatus"
+                                    value={filterStatus}
+                                    onChange={this.onChange}
                                 >
                                     <option values={-1}>Tất cả</option>
                                     <option values={0}>Ẩn</option>
@@ -51,7 +83,7 @@ class TaskList extends Component {
                         {/* <TaskItems />
                         <TaskItems />
                         <TaskItems /> */}
-                        {elmtasks}
+                        {elmTasks}
                     </tbody>
                 </table>
             </div>
