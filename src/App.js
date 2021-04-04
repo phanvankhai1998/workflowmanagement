@@ -12,6 +12,7 @@ class App extends Component {
             tasks: [],
             // isShowModal: false,
             isDisplayFrom: false,
+            taskEditing: null,
         };
         // this.showHideModal = React.createRef();
     }
@@ -72,11 +73,19 @@ class App extends Component {
             ;
     }
 
-    onToggleForm = () => {
-        console.log();
-        this.setState({
-            isDisplayFrom: !this.state.isDisplayFrom,
-        });
+    onToggleForm = () => {  //Thêm task
+        if (this.state.isDisplayFrom && this.state.taskEditing !== null) {
+            console.log("ths1");
+            this.setState({
+                isDisplayFrom: true,
+                taskEditing: null,
+            });
+        } else {
+            this.setState({
+                isDisplayFrom: !this.state.isDisplayFrom,
+                taskEditing: null,
+            });
+        }
     }
 
     onCloseForm = () => {
@@ -89,10 +98,19 @@ class App extends Component {
     onSubmit = (data) => {
         var { tasks } = this.state; //tasks = this.state.tasks
         console.log("This is data: ", data);
-        data.id = this.generateID();
-        tasks.push(data);
+        if (data.id === '') {
+            data.id = this.generateID();
+            tasks.push(data);
+
+        } else {
+            //Editing
+            var index = this.findIndex(data.id);
+            tasks[index] = data;
+        }
+
         this.setState({
-            tasks: tasks
+            tasks: tasks,
+            taskEditing: null,
         });
         localStorage.setItem('Tasks', JSON.stringify(tasks))
     }
@@ -134,16 +152,36 @@ class App extends Component {
             localStorage.setItem('tasks', JSON.stringify(tasks));
         }
         this.onCloseForm();
-    };
+    }
+
+    onShowForm = () => {
+        this.setState({
+            isDisplayFrom: true
+        })
+    }
+
+    onUpdate = (id) => {
+        //console.log("ID:", id);//log xem có lấy đc ID hay ko
+
+        //Tìm index
+        var { tasks } = this.state;
+        var index = this.findIndex(id);
+        var taskEditing = tasks[index];
+        this.setState({
+            taskEditing: taskEditing
+        });
+        this.onShowForm();
+    }
 
     render() {
-        var { tasks, isDisplayFrom } = this.state;
-        console.log("State:", this.state);
-        console.log("Props:", this.props);
+        var { tasks, isDisplayFrom, taskEditing } = this.state;
+        // console.log("State:", this.state);
+        // console.log("Props:", this.props);
         var elmTaskForm = isDisplayFrom
             ? <TaskForm
                 onCloseForm={this.onCloseForm}
                 onSubmit={this.onSubmit}
+                task={taskEditing}
             />
             : "";
         // var task = this.state.tasks;
@@ -183,6 +221,7 @@ class App extends Component {
                                 tasks={tasks}
                                 onUpdateStatus={this.onUpdateStatus}
                                 onDelete={this.onDelete}
+                                onUpdate={this.onUpdate}
                             />
                         </div>
                     </div>
